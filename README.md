@@ -21,9 +21,6 @@ Protocol
 
 Example:
 1 producer, 2 consumers
-topic: ping
-```
-
 ```
 monitor
 
