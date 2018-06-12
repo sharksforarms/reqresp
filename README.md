@@ -27,34 +27,34 @@ monitor
 "flushall"
 
 python run_worker.py consumer1
-"SADD" "pingpong:consumers" "consumer1"
-"BLPOP" "pingpong:consumer:consumer1" "0"
+(consumer1) "SADD" "pingpong:consumers" "consumer1"
+(consumer1) "BLPOP" "pingpong:consumer:consumer1" "0"
 
 python run_worker.py consumer2
-"SADD" "pingpong:consumers" "consumer2"
-"BLPOP" "pingpong:consumer:consumer2" "0"
+(consumer2) "SADD" "pingpong:consumers" "consumer2"
+(consumer2) "BLPOP" "pingpong:consumer:consumer2" "0"
 
 python run.py
 # Get consumers list and set request
-"SMEMBERS" "pingpong:consumers"
-"HMSET" "pingpong:request:a8b6b442-874e-4606-9044-65c8bc257207" "data" "ping"
+(producer) "SMEMBERS" "pingpong:consumers"
+(producer) "HMSET" "pingpong:request:a8b6b442-874e-4606-9044-65c8bc257207" "data" "ping"
 
 # Notify consumers
-"RPUSH" "pingpong:consumer:consumer1" "a8b6b442-874e-4606-9044-65c8bc257207"
-"HGETALL" "pingpong:request:a8b6b442-874e-4606-9044-65c8bc257207"
-"HMSET" "pingpong:response:a8b6b442-874e-4606-9044-65c8bc257207:consumer1" "data" "pong"
-"BLPOP" "pingpong:consumer:consumer1" "0"
+(producer) "RPUSH" "pingpong:consumer:consumer1" "a8b6b442-874e-4606-9044-65c8bc257207"
+(consumer1) "HGETALL" "pingpong:request:a8b6b442-874e-4606-9044-65c8bc257207"
+(consumer1) "HMSET" "pingpong:response:a8b6b442-874e-4606-9044-65c8bc257207:consumer1" "data" "pong"
+(consumer1) "BLPOP" "pingpong:consumer:consumer1" "0"
 
-"RPUSH" "pingpong:consumer:consumer2" "a8b6b442-874e-4606-9044-65c8bc257207"
-"HGETALL" "pingpong:request:a8b6b442-874e-4606-9044-65c8bc257207"
-"HMSET" "pingpong:response:a8b6b442-874e-4606-9044-65c8bc257207:consumer2" "data" "pong"
-"BLPOP" "pingpong:consumer:consumer2" "0"
+(producer) "RPUSH" "pingpong:consumer:consumer2" "a8b6b442-874e-4606-9044-65c8bc257207"
+(consumer2) "HGETALL" "pingpong:request:a8b6b442-874e-4606-9044-65c8bc257207"
+(consumer2) "HMSET" "pingpong:response:a8b6b442-874e-4606-9044-65c8bc257207:consumer2" "data" "pong"
+(consumer2) "BLPOP" "pingpong:consumer:consumer2" "0"
 
 # Check for responses (blocking poll until all respond)
-"EXISTS" "pingpong:response:a8b6b442-874e-4606-9044-65c8bc257207:consumer1"
-"EXISTS" "pingpong:response:a8b6b442-874e-4606-9044-65c8bc257207:consumer2"
+(producer) "EXISTS" "pingpong:response:a8b6b442-874e-4606-9044-65c8bc257207:consumer1"
+(producer) "EXISTS" "pingpong:response:a8b6b442-874e-4606-9044-65c8bc257207:consumer2"
 
 # Get responses
-"HGETALL" "pingpong:response:a8b6b442-874e-4606-9044-65c8bc257207:consumer1"
-"HGETALL" "pingpong:response:a8b6b442-874e-4606-9044-65c8bc257207:consumer2"
+(producer) "HGETALL" "pingpong:response:a8b6b442-874e-4606-9044-65c8bc257207:consumer1"
+(producer) "HGETALL" "pingpong:response:a8b6b442-874e-4606-9044-65c8bc257207:consumer2"
 ```
